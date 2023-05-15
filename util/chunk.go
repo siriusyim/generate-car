@@ -2,6 +2,11 @@ package util
 
 import (
 	"context"
+	"io"
+	"os"
+	"path/filepath"
+	"strings"
+
 	"github.com/ipfs/go-blockservice"
 	"github.com/ipfs/go-cid"
 	"github.com/ipfs/go-datastore"
@@ -26,10 +31,6 @@ import (
 	"github.com/ipld/go-ipld-prime/traversal/selector"
 	"github.com/ipld/go-ipld-prime/traversal/selector/builder"
 	"golang.org/x/xerrors"
-	"io"
-	"os"
-	"path/filepath"
-	"strings"
 )
 
 const UnixfsLinksPerLevel = 1 << 10
@@ -362,12 +363,12 @@ func BuildFileNode(ctx context.Context, item Finfo, bufDs ipld.DAGService, cidBu
 		NoCopy:     true,
 	}
 	db, err := params.New(chunker.NewSizeSplitter(r, int64(UnixfsChunkSize)))
-	db.SetOffset(uint64(item.Start))
+	//db.SetOffset(uint64(item.Start))
 	if err != nil {
 		logger.Warn(err)
 		return
 	}
-	node, err = balanced.Layout(db)
+	node, err = balanced.LayoutI(db)
 	if err != nil {
 		logger.Warn(err)
 		return
